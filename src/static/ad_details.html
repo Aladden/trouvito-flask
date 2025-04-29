@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Details - Trouvito Ivory Coast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Simple image gallery styles */
+        .gallery-main-image img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e5e7eb; /* gray-200 */
+        }
+        .gallery-thumbnails {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .gallery-thumbnails img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        .gallery-thumbnails img.active {
+            border-color: #4f46e5; /* indigo-600 */
+        }
+        /* Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4f46e5;
+            animation: spin 1s ease infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto py-4 px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="/" class="text-3xl font-bold logo-text">trouvito</a>
+                <span class="ml-2 text-gray-500">Côte d'Ivoire</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/post_ad.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-all text-sm hidden" id="post-ad-button">Post New Ad</a>
+                <!-- User Dropdown (Visible when logged in) -->
+                <div class="dropdown relative hidden" id="user-dropdown">
+                    <button class="flex items-center text-gray-700 hover:text-indigo-600 transition-all">
+                        <i class="fas fa-user-circle text-xl mr-1"></i>
+                        <span id="profile-username-header">My Account</span>
+                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div class="dropdown-menu absolute hidden right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        <ul class="py-1">
+                            <li><a href="/profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-user mr-2 text-indigo-500"></i> My Profile</a></li>
+                            <li><a href="/messages.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-envelope mr-2 text-indigo-500"></i> Messages</a></li>
+                            <li><a href="#" id="logout-button" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-sign-out-alt mr-2 text-indigo-500"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+                 <!-- Login/Register Buttons (Visible when logged out) -->
+                 <div id="auth-buttons" class="flex space-x-2">
+                    <a href="/login.html" class="text-gray-700 hover:text-indigo-600">Log In</a>
+                    <a href="/register.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm">Register</a>
+                 </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ad Details Section -->
+    <div class="container mx-auto px-4 py-12">
+        <div id="ad-loading" class="text-center"><div class="spinner"></div><p>Loading ad details...</p></div>
+        <div id="ad-error" class="text-center text-red-500 hidden"></div>
+        <div id="ad-content" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Image Gallery (Left/Top) -->
+                <div class="md:col-span-2">
+                    <div class="gallery-main-image mb-4 bg-gray-100 flex items-center justify-center min-h-[300px]">
+                        <img id="main-image" src="" alt="Ad Image" class="hidden">
+                        <span id="no-image-text" class="text-gray-500">No image available</span>
+                    </div>
+                    <div id="thumbnail-container" class="gallery-thumbnails">
+                        <!-- Thumbnails loaded here -->
+                    </div>
+                </div>
+
+                <!-- Ad Info & Seller Info (Right/Bottom) -->
+                <div class="md:col-span-1">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h1 id="ad-title" class="text-3xl font-bold text-gray-800 mb-2"></h1>
+                        <p id="ad-price" class="text-2xl font-semibold text-indigo-600 mb-4"></p>
+                        <div class="text-sm text-gray-500 mb-4 space-y-1">
+                            <p><i class="fas fa-tag mr-2"></i>Category: <span id="ad-category"></span></p>
+                            <p><i class="fas fa-map-marker-alt mr-2"></i>Location: <span id="ad-location"></span></p>
+                            <p><i class="fas fa-clock mr-2"></i>Posted: <span id="ad-posted-date"></span></p>
+                            <p id="ad-status-display" class="hidden"><i class="fas fa-info-circle mr-2"></i>Status: <span id="ad-status" class="font-medium"></span></p>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-3">Seller Information</h3>
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-user-circle text-3xl text-gray-400 mr-3"></i>
+                                <div>
+                                    <p id="seller-username" class="font-semibold text-gray-800"></p>
+                                    <p class="text-sm text-gray-500">Member since <span id="seller-member-since"></span></p>
+                                </div>
+                            </div>
+                            <div id="seller-rating" class="text-sm text-gray-600 mb-4">
+                                <!-- Rating loaded here -->
+                            </div>
+                            <button id="contact-seller-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-all"><i class="fas fa-envelope mr-2"></i>Contact Seller</button>
+                            <a id="view-seller-profile-btn" href="#" class="mt-2 block text-center text-indigo-600 hover:text-indigo-800 text-sm">View Seller's Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description & Reviews (Full Width Below) -->
+            <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
+                <p id="ad-description" class="text-gray-700 whitespace-pre-wrap"></p>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Seller Reviews (<span id="review-count">0</span>)</h2>
+                <div id="reviews-list" class="space-y-4">
+                    <!-- Reviews loaded here -->
+                </div>
+                <p id="no-reviews-message" class="text-gray-500 mt-4 hidden">This seller hasn't received any reviews yet.</p>
+                <!-- Add Review Button/Form (Optional, maybe only if logged in and not the seller) -->
+                <button id="add-review-btn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-all hidden"><i class="fas fa-star mr-2"></i>Leave a Review</button>
+                <div id="add-review-form" class="mt-4 hidden border-t pt-4">
+                    <h3 class="text-lg font-semibold mb-2">Write your review</h3>
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700">Rating</label>
+                        <div class="flex space-x-1 text-yellow-400 text-xl rating-stars">
+                            <i class="far fa-star cursor-pointer" data-value="1"></i>
+                            <i class="far fa-star cursor-pointer" data-value="2"></i>
+                            <i class="far fa-star cursor-pointer" data-value="3"></i>
+                            <i class="far fa-star cursor-pointer" data-value="4"></i>
+                            <i class="far fa-star cursor-pointer" data-value="5"></i>
+                        </div>
+                        <input type="hidden" id="review-rating" value="0">
+                    </div>
+                    <div class="mb-2">
+                        <label for="review-text" class="block text-sm font-medium text-gray-700">Review (optional)</label>
+                        <textarea id="review-text" rows="3" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                    </div>
+                    <div id="review-message" class="mb-2 hidden p-2 rounded-md text-sm"></div>
+                    <button id="submit-review-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 px-3 rounded text-sm">Submit Review</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="bg-gray-200 text-gray-600 py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            &copy; 2024 Trouvito Côte d'Ivoire. Tous droits réservés.
+        </div>
+    </footer>
+
+    <script>
+        const adLoading = document.getElementById('ad-loading');
+        const adContent = document.getElementById('ad-content');
+        const adError = document.getElementById('ad-error');
+        const mainImage = document.getElementById('main-image');
+        const noImageText = document.getElementById('no-image-text');
+        const thumbnailContainer = document.getElementById('thumbnail-container');
+        const adTitle = document.getElementById('ad-title');
+        const adPrice = document.getElementById('ad-price');
+        const adCategory = document.getElementById('ad-category');
+        const adLocation = document.getElementById('ad-location');
+        const adPostedDate = document.getElementById('ad-posted-date');
+        const adStatusDisplay = document.getElementById('ad-status-display');
+        const adStatus = document.getElementById('ad-status');
+        const adDescription = document.getElementById('ad-description');
+        const sellerUsername = document.getElementById('seller-username');
+        const sellerMemberSince = document.getElementById('seller-member-since');
+        const sellerRating = document.getElementById('seller-rating');
+        const contactSellerBtn = document.getElementById('contact-seller-btn');
+        const viewSellerProfileBtn = document.getElementById('view-seller-profile-btn');
+        const reviewsList = document.getElementById('reviews-list');
+        const noReviewsMessage = document.getElementById('no-reviews-message');
+        const reviewCount = document.getElementById('review-count');
+        const addReviewBtn = document.getElementById('add-review-btn');
+        const addReviewForm = document.getElementById('add-review-form');
+        const ratingStarsContainer = addReviewForm.querySelector('.rating-stars');
+        const ratingStars = ratingStarsContainer.querySelectorAll('i');
+        const reviewRatingInput = document.getElementById('review-rating');
+        const reviewTextInput = document.getElementById('review-text');
+        const submitReviewBtn = document.getElementById('submit-review-btn');
+        const reviewMessage = document.getElementById('review-message');
+
+        const profileUsernameHeader = document.getElementById('profile-username-header');
+        const logoutButton = document.getElementById('logout-button');
+        const userDropdown = document.getElementById('user-dropdown');
+        const authButtons = document.getElementById('auth-buttons');
+        const postAdButton = document.getElementById('post-ad-button');
+
+        let currentAdData = null;
+        let currentUserData = null;
+
+        // --- Authentication Check and Header Update ---
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/auth/status');
+                currentUserData = await response.json(); // Store current user status
+                if (currentUserData.logged_in) {
+                    profileUsernameHeader.textContent = currentUserData.user.username;
+                    userDropdown.classList.remove('hidden');
+                    authButtons.classList.add('hidden');
+                    postAdButton.classList.remove('hidden');
+                } else {
+                    userDropdown.classList.add('hidden');
+                    authButtons.classList.remove('hidden');
+                    postAdButton.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                userDropdown.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+                postAdButton.classList.add('hidden');
+                currentUserData = { logged_in: false }; // Assume logged out on error
+            }
+        }
+
+        // --- Load Ad Details ---
+        async function loadAdDetails() {
+            await checkLoginStatus(); // Check login status first
+            const urlParams = new URLSearchParams(window.location.search);
+            const adId = urlParams.get('id');
+
+            if (!adId) {
+                showError('No ad ID specified.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/ads/${adId}`);
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'Failed to load ad details.' }));
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+                currentAdData = await response.json();
+
+                // Populate Gallery
+                thumbnailContainer.innerHTML = '';
+                if (currentAdData.images && currentAdData.images.length > 0) {
+                    mainImage.src = currentAdData.images[0];
+                    mainImage.classList.remove('hidden');
+                    noImageText.classList.add('hidden');
+
+                    currentAdData.images.forEach((imgSrc, index) => {
+                        const thumb = document.createElement('img');
+                        thumb.src = imgSrc;
+                        thumb.alt = `Thumbnail ${index + 1}`;
+                        thumb.dataset.index = index;
+                        if (index === 0) thumb.classList.add('active');
+                        thumb.addEventListener('click', () => {
+                            mainImage.src = imgSrc;
+                            thumbnailContainer.querySelectorAll('img').forEach(t => t.classList.remove('active'));
+                            thumb.classList.add('active');
+                        });
+                        thumbnailContainer.appendChild(thumb);
+                    });
+                } else {
+                    mainImage.classList.add('hidden');
+                    noImageText.classList.remove('hidden');
+                }
+
+                // Populate Ad Info
+                adTitle.textContent = currentAdData.title;
+                adPrice.textContent = currentAdData.price ? `${currentAdData.price.toLocaleString('fr-CI')} FCFA` : 'Price not specified';
+                adCategory.textContent = currentAdData.category ? currentAdData.category.name : 'N/A';
+                adLocation.textContent = currentAdData.location ? `${currentAdData.location.city}, ${currentAdData.location.region}` : 'N/A';
+                adPostedDate.textContent = new Date(currentAdData.created_at).toLocaleDateString();
+                adDescription.textContent = currentAdData.description;
+
+                // Show status only if not active (or maybe always?)
+                if (currentAdData.status !== 'active') {
+                    adStatus.textContent = currentAdData.status.charAt(0).toUpperCase() + currentAdData.status.slice(1);
+                    adStatusDisplay.classList.remove('hidden');
+                }
+
+                // Populate Seller Info
+                sellerUsername.textContent = currentAdData.user.username;
+                sellerMemberSince.textContent = new Date(currentAdData.user.created_at).toLocaleDateString();
+                viewSellerProfileBtn.href = `/public_profile.html?id=${currentAdData.user.id}`; // Link to public profile page (needs creation)
+
+                // Seller Rating
+                if (currentAdData.user.average_rating !== null) {
+                    let starsHtml = '';
+                    const roundedRating = Math.round(currentAdData.user.average_rating * 2) / 2; // Round to nearest 0.5
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= roundedRating) starsHtml += '<i class="fas fa-star text-yellow-400"></i>';
+                        else if (i - 0.5 === roundedRating) starsHtml += '<i class="fas fa-star-half-alt text-yellow-400"></i>';
+                        else starsHtml += '<i class="far fa-star text-gray-300"></i>';
+                    }
+                    sellerRating.innerHTML = `${starsHtml} ${currentAdData.user.average_rating.toFixed(1)}/5 (${currentAdData.user.review_count} reviews)`;
+                } else {
+                    sellerRating.textContent = 'No ratings yet.';
+                }
+
+                // Contact Seller Button Logic
+                if (currentUserData.logged_in && currentUserData.user.id !== currentAdData.user.id) {
+                    contactSellerBtn.classList.remove('hidden');
+                    contactSellerBtn.onclick = () => {
+                        // Redirect to messages page, potentially pre-filling recipient
+                        window.location.href = `/messages.html?recipient_id=${currentAdData.user.id}&recipient_username=${currentAdData.user.username}`;
+                    };
+                } else {
+                    contactSellerBtn.classList.add('hidden');
+                }
+
+                // Populate Reviews
+                reviewsList.innerHTML = '';
+                reviewCount.textContent = currentAdData.seller_reviews.length;
+                if (currentAdData.seller_reviews && currentAdData.seller_reviews.length > 0) {
+                    noReviewsMessage.classList.add('hidden');
+                    currentAdData.seller_reviews.forEach(review => {
+                        const reviewElement = createReviewElement(review);
+                        reviewsList.appendChild(reviewElement);
+                    });
+                } else {
+                    noReviewsMessage.classList.remove('hidden');
+                }
+
+                // Show/Hide Add Review Button/Form
+                if (currentUserData.logged_in && currentUserData.user.id !== currentAdData.user.id) {
+                    // Optional: Check if user already reviewed this seller
+                    addReviewBtn.classList.remove('hidden');
+                }
+
+                adLoading.classList.add('hidden');
+                adContent.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error loading ad details:', error);
+                showError(error.message || 'Failed to load ad details. Please try again.');
+            }
+        }
+
+        function createReviewElement(review) {
+            const div = document.createElement('div');
+            div.className = 'border-b py-4';
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<i class="${i <= review.rating ? 'fas' : 'far'} fa-star text-yellow-400"></i>`;
+            }
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-1">
+                    <div>
+                        <span class="font-semibold">${escapeHtml(review.reviewer.username)}</span>
+                        <span class="text-sm text-gray-500 ml-2">- ${new Date(review.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <div class="flex text-yellow-400">
+                        ${starsHtml}
+                    </div>
+                </div>
+                <p class="text-gray-700">${escapeHtml(review.review_text || '')}</p>
+            `;
+            return div;
+        }
+
+        function showError(message) {
+            adLoading.classList.add('hidden');
+            adContent.classList.add('hidden');
+            adError.textContent = message;
+            adError.classList.remove('hidden');
+        }
+
+        // --- Handle Logout ---
+        logoutButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/auth/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('Logout failed.');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('An error occurred during logout.');
+            }
+        });
+
+        // --- Add Review Logic ---
+        addReviewBtn.addEventListener('click', () => {
+            addReviewForm.classList.toggle('hidden');
+        });
+
+        ratingStarsContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'I') {
+                const value = parseInt(e.target.dataset.value);
+                reviewRatingInput.value = value;
+                ratingStars.forEach((star, index) => {
+                    star.classList.toggle('fas', index < value);
+                    star.classList.toggle('far', index >= value);
+                });
+            }
+        });
+
+        submitReviewBtn.addEventListener('click', async () => {
+            const rating = parseInt(reviewRatingInput.value);
+            const reviewText = reviewTextInput.value.trim();
+            const reviewedUserId = currentAdData.user.id;
+
+            if (rating === 0) {
+                showReviewMessage('Please select a rating.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/reviews/user/${reviewedUserId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rating: rating, review_text: reviewText })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showReviewMessage('Review submitted successfully!', 'success');
+                    addReviewForm.classList.add('hidden');
+                    addReviewBtn.classList.add('hidden'); // Hide button after successful review
+                    // Optionally, reload reviews or add the new review dynamically
+                    loadAdDetails(); // Reload all details to show new review and updated rating
+                } else {
+                    throw new Error(result.error || 'Failed to submit review');
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                showReviewMessage(`Error: ${error.message}`, 'error');
+            }
+        });
+
+        function showReviewMessage(message, type) {
+            reviewMessage.textContent = message;
+            reviewMessage.className = `mb-2 p-2 rounded-md text-sm ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            reviewMessage.classList.remove('hidden');
+        }
+
+        // --- Utility function ---
+        function escapeHtml(unsafe) {
+            if (unsafe === null || typeof unsafe === 'undefined') return '';
+            return unsafe.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/
+'/g, "&#039;");
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', loadAdDetails);
+
+    </script>
+</body>
+</html>
+
