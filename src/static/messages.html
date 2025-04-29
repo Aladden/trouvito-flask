@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Messages - Trouvito Ivory Coast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4f46e5;
+            animation: spin 1s ease infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Custom scrollbar for message list */
+        .message-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .message-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .message-list::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        .message-list::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+        .conversation-item.active {
+            background-color: #eef2ff; /* indigo-50 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto py-4 px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="/" class="text-3xl font-bold logo-text">trouvito</a>
+                <span class="ml-2 text-gray-500">Côte d'Ivoire</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/post_ad.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-all text-sm hidden" id="post-ad-button">Post New Ad</a>
+                <!-- User Dropdown (Visible when logged in) -->
+                <div class="dropdown relative hidden" id="user-dropdown">
+                    <button class="flex items-center text-gray-700 hover:text-indigo-600 transition-all">
+                        <i class="fas fa-user-circle text-xl mr-1"></i>
+                        <span id="profile-username-header">My Account</span>
+                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div class="dropdown-menu absolute hidden right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        <ul class="py-1">
+                            <li><a href="/profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-user mr-2 text-indigo-500"></i> My Profile</a></li>
+                            <li><a href="/messages.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-envelope mr-2 text-indigo-500"></i> Messages</a></li>
+                            <li><a href="#" id="logout-button" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-sign-out-alt mr-2 text-indigo-500"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+                 <!-- Login/Register Buttons (Visible when logged out) -->
+                 <div id="auth-buttons" class="flex space-x-2">
+                    <a href="/login.html" class="text-gray-700 hover:text-indigo-600">Log In</a>
+                    <a href="/register.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm">Register</a>
+                 </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Messaging Section -->
+    <div class="container mx-auto px-4 py-12">
+        <div id="messages-loading" class="text-center"><div class="spinner"></div><p>Loading messages...</p></div>
+        <div id="messages-content" class="bg-white rounded-lg shadow-md w-full hidden" style="height: 70vh; display: flex;">
+
+            <!-- Conversations List (Left Pane) -->
+            <div class="w-1/3 border-r border-gray-200 flex flex-col">
+                <div class="p-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">Conversations</h2>
+                    <!-- Optional: Search bar for conversations -->
+                </div>
+                <div id="conversations-list" class="overflow-y-auto flex-grow">
+                    <!-- Conversations loaded here -->
+                    <p id="no-conversations" class="p-4 text-gray-500 hidden">No conversations yet.</p>
+                </div>
+            </div>
+
+            <!-- Message View (Right Pane) -->
+            <div class="w-2/3 flex flex-col">
+                <div id="message-view-default" class="flex-grow flex items-center justify-center text-gray-500">
+                    Select a conversation to view messages.
+                </div>
+                <div id="message-view-active" class="flex-grow flex flex-col hidden">
+                    <!-- Header with recipient name -->
+                    <div class="p-4 border-b border-gray-200 bg-gray-50">
+                        <h3 id="recipient-name" class="font-semibold text-gray-800"></h3>
+                        <!-- Optional: Link to recipient profile -->
+                    </div>
+                    <!-- Messages -->
+                    <div id="message-list" class="message-list flex-grow overflow-y-auto p-4 space-y-4">
+                        <!-- Messages loaded here -->
+                    </div>
+                    <!-- Message Input -->
+                    <div class="p-4 border-t border-gray-200 bg-gray-50">
+                        <form id="send-message-form" class="flex items-center space-x-2">
+                            <input type="text" id="message-input" placeholder="Type your message..." required
+                                   class="flex-grow shadow-sm appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="hidden" id="recipient-id">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-all">
+                                Send
+                            </button>
+                        </form>
+                        <div id="send-message-error" class="text-red-500 text-sm mt-1 hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="bg-gray-200 text-gray-600 py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            &copy; 2024 Trouvito Côte d'Ivoire. Tous droits réservés.
+        </div>
+    </footer>
+
+    <script>
+        const messagesLoading = document.getElementById('messages-loading');
+        const messagesContent = document.getElementById('messages-content');
+        const conversationsListContainer = document.getElementById('conversations-list');
+        const noConversationsMessage = document.getElementById('no-conversations');
+        const messageViewDefault = document.getElementById('message-view-default');
+        const messageViewActive = document.getElementById('message-view-active');
+        const recipientNameHeader = document.getElementById('recipient-name');
+        const messageListContainer = document.getElementById('message-list');
+        const sendMessageForm = document.getElementById('send-message-form');
+        const messageInput = document.getElementById('message-input');
+        const recipientIdInput = document.getElementById('recipient-id');
+        const sendMessageError = document.getElementById('send-message-error');
+
+        const profileUsernameHeader = document.getElementById('profile-username-header');
+        const logoutButton = document.getElementById('logout-button');
+        const userDropdown = document.getElementById('user-dropdown');
+        const authButtons = document.getElementById('auth-buttons');
+        const postAdButton = document.getElementById('post-ad-button');
+
+        let currentUserId = null;
+        let activeConversationUserId = null;
+
+        // --- Authentication Check and Header Update ---
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                if (data.logged_in) {
+                    currentUserId = data.user.id;
+                    profileUsernameHeader.textContent = data.user.username;
+                    userDropdown.classList.remove('hidden');
+                    authButtons.classList.add('hidden');
+                    postAdButton.classList.remove('hidden');
+                    return true; // User is logged in
+                } else {
+                    userDropdown.classList.add('hidden');
+                    authButtons.classList.remove('hidden');
+                    postAdButton.classList.add('hidden');
+                    // Redirect to login page if trying to access messages while logged out
+                    window.location.href = '/login.html?redirect=/messages.html';
+                    return false; // User is not logged in
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                userDropdown.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+                postAdButton.classList.add('hidden');
+                 // Redirect to login page on error
+                window.location.href = '/login.html?redirect=/messages.html';
+                return false;
+            }
+        }
+
+        // --- Load Conversations ---
+        async function loadConversations() {
+            const isLoggedIn = await checkLoginStatus();
+            if (!isLoggedIn) return;
+
+            try {
+                const response = await fetch('/api/messages/conversations');
+                if (!response.ok) {
+                     if (response.status === 401) {
+                        window.location.href = '/login.html?redirect=/messages.html';
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const conversations = await response.json();
+
+                conversationsListContainer.innerHTML = ''; // Clear previous list
+                if (conversations && conversations.length > 0) {
+                    noConversationsMessage.classList.add('hidden');
+                    conversations.forEach(convo => {
+                        const convoElement = createConversationElement(convo);
+                        conversationsListContainer.appendChild(convoElement);
+                    });
+                } else {
+                    noConversationsMessage.classList.remove('hidden');
+                }
+
+                messagesLoading.classList.add('hidden');
+                messagesContent.style.display = 'flex'; // Show content
+
+                // Check URL parameters for pre-selected recipient
+                const urlParams = new URLSearchParams(window.location.search);
+                const recipientId = urlParams.get('recipient_id');
+                const recipientUsername = urlParams.get('recipient_username');
+                if (recipientId && recipientUsername) {
+                    // Check if conversation exists, if not, create a placeholder
+                    let existingConvoElement = conversationsListContainer.querySelector(`[data-user-id="${recipientId}"]`);
+                    if (!existingConvoElement) {
+                        const placeholderConvo = {
+                            other_user: { id: recipientId, username: recipientUsername },
+                            last_message: { content: 'Start conversation...', timestamp: new Date().toISOString(), sender_id: null },
+                            unread_count: 0
+                        };
+                        existingConvoElement = createConversationElement(placeholderConvo);
+                        conversationsListContainer.prepend(existingConvoElement); // Add to top
+                    }
+                    // Activate this conversation
+                    activateConversation(existingConvoElement, recipientId, recipientUsername);
+                    // Clear URL parameters after use
+                    window.history.replaceState({}, document.title, "/messages.html");
+                }
+
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+                messagesLoading.innerHTML = '<p class="text-red-500">Error loading conversations. Please try again later.</p>';
+            }
+        }
+
+        function createConversationElement(convo) {
+            const div = document.createElement('div');
+            div.className = 'conversation-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer';
+            div.dataset.userId = convo.other_user.id;
+            div.dataset.username = convo.other_user.username;
+
+            const isUnread = convo.unread_count > 0;
+            const lastMessageSender = convo.last_message.sender_id === currentUserId ? 'You: ' : '';
+
+            div.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-semibold ${isUnread ? 'text-indigo-700' : 'text-gray-800'}">${escapeHtml(convo.other_user.username)}</span>
+                    ${isUnread ? `<span class="bg-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">${convo.unread_count}</span>` : ''}
+                </div>
+                <p class="text-sm ${isUnread ? 'text-gray-700 font-medium' : 'text-gray-500'} truncate">
+                    ${escapeHtml(lastMessageSender)}${escapeHtml(convo.last_message.content)}
+                </p>
+                <p class="text-xs text-gray-400 text-right">${timeAgo(convo.last_message.timestamp)}</p>
+            `;
+
+            div.addEventListener('click', () => {
+                activateConversation(div, convo.other_user.id, convo.other_user.username);
+            });
+            return div;
+        }
+
+        function activateConversation(element, userId, username) {
+             // Mark as active in list
+                document.querySelectorAll('.conversation-item').forEach(item => item.classList.remove('active'));
+                element.classList.add('active');
+
+                // Update right pane
+                activeConversationUserId = userId;
+                recipientNameHeader.textContent = username;
+                recipientIdInput.value = userId;
+                messageListContainer.innerHTML = '<div class="spinner mx-auto my-8"></div>'; // Show loading spinner
+                messageViewDefault.classList.add('hidden');
+                messageViewActive.classList.remove('hidden');
+                sendMessageError.classList.add('hidden');
+                messageInput.value = ''; // Clear input
+
+                // Fetch messages for this conversation
+                loadMessages(userId);
+
+                // If the conversation element had unread indicator, remove it visually (backend handles actual read status)
+                const unreadBadge = element.querySelector('.bg-indigo-600');
+                if (unreadBadge) {
+                    unreadBadge.remove();
+                    element.querySelector('.font-semibold').classList.remove('text-indigo-700');
+                    element.querySelector('.font-semibold').classList.add('text-gray-800');
+                    element.querySelector('.text-sm').classList.remove('text-gray-700', 'font-medium');
+                    element.querySelector('.text-sm').classList.add('text-gray-500');
+                }
+        }
+
+        // --- Load Messages for Active Conversation ---
+        async function loadMessages(otherUserId) {
+            try {
+                const response = await fetch(`/api/messages/conversations/${otherUserId}`);
+                 if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const messages = await response.json();
+
+                messageListContainer.innerHTML = ''; // Clear spinner/previous messages
+                if (messages && messages.length > 0) {
+                    messages.forEach(msg => {
+                        const msgElement = createMessageElement(msg);
+                        messageListContainer.appendChild(msgElement);
+                    });
+                    scrollToBottom(messageListContainer);
+                } else {
+                    messageListContainer.innerHTML = '<p class="text-center text-gray-500 my-4">No messages in this conversation yet.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                messageListContainer.innerHTML = '<p class="text-center text-red-500 my-4">Error loading messages.</p>';
+            }
+        }
+
+        function createMessageElement(msg) {
+            const div = document.createElement('div');
+            const isSender = msg.sender_id === currentUserId;
+            div.className = `flex ${isSender ? 'justify-end' : 'justify-start'}`;
+            div.innerHTML = `
+                <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isSender ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-800'}">
+                    <p>${escapeHtml(msg.content)}</p>
+                    <p class="text-xs ${isSender ? 'text-indigo-200' : 'text-gray-500'} text-right mt-1">${new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+            `;
+            return div;
+        }
+
+        // --- Handle Sending Message ---
+        sendMessageForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            sendMessageError.classList.add('hidden');
+            const content = messageInput.value.trim();
+            const recipientId = recipientIdInput.value;
+
+            if (!content || !recipientId) {
+                sendMessageError.textContent = 'Cannot send empty message.';
+                sendMessageError.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/messages/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ receiver_id: recipientId, content: content })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    messageInput.value = ''; // Clear input
+                    // Add the sent message to the list immediately
+                    const msgElement = createMessageElement(result.sent_message);
+                    // Remove 'no messages' placeholder if present
+                    const placeholder = messageListContainer.querySelector('p.text-center');
+                    if(placeholder) placeholder.remove();
+
+                    messageListContainer.appendChild(msgElement);
+                    scrollToBottom(messageListContainer);
+                    // TODO: Optionally update the conversation list order/last message
+                    // For simplicity, we might rely on full refresh or next load
+                } else {
+                    throw new Error(result.error || 'Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                sendMessageError.textContent = `Error: ${error.message}`;
+                sendMessageError.classList.remove('hidden');
+            }
+        });
+
+        // --- Handle Logout ---
+        logoutButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/auth/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('Logout failed.');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('An error occurred during logout.');
+            }
+        });
+
+        // --- Utility Functions ---
+        function escapeHtml(unsafe) {
+            if (unsafe === null || typeof unsafe === 'undefined') return '';
+            return unsafe.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function scrollToBottom(element) {
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function timeAgo(timestamp) {
+            const now = new Date();
+            const past = new Date(timestamp);
+            const diffInSeconds = Math.floor((now - past) / 1000);
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            const diffInDays = Math.floor(diffInHours / 24);
+
+            if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+            if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+            if (diffInHours < 24) return `${diffInHours}h ago`;
+            if (diffInDays === 1) return `Yesterday`;
+            if (diffInDays < 7) return `${diffInDays}d ago`;
+            return past.toLocaleDateString();
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', loadConversations);
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trouvito Ivory Coast - Buy & Sell Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .search-dropdown {
+            display: none;
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+        }
+        .search-container:hover .search-dropdown {
+            display: block;
+        }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        .gradient-bg {
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        }
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .animated-bg {
+            animation: gradient 15s ease infinite;
+            background-size: 400% 400%;
+        }
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Top Bar -->
+    <div class="bg-gray-800 text-white py-2 px-4 text-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex space-x-4">
+                <a href="#" class="hover:text-indigo-400">Français</a>
+                <a href="#" class="hover:text-indigo-400">English</a>
+                <a href="#" class="hover:text-indigo-400">العربية</a>
+                <a href="#" class="hover:text-indigo-400">Aide</a>
+                <a href="#" class="hover:text-indigo-400">Contactez-nous</a>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#" class="hover:text-indigo-400"><i class="fas fa-heart mr-1"></i> Favoris</a>
+                <a href="#" class="hover:text-indigo-400"><i class="fas fa-bell mr-1"></i> Alertes</a>
+                <a href="#" class="hover:text-indigo-400"><i class="fas fa-user mr-1"></i> Mon Compte</a>
+                <a href="#" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-md transition-all">Publier une Annonce</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto py-4 px-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="#" class="text-3xl font-bold logo-text">trouvito</a>
+                    <span class="ml-2 text-gray-500">Côte d'Ivoire</span>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-container relative w-1/2">
+                    <div class="flex">
+                        <input type="text" placeholder="Trouvez des Voitures, Téléphones, Propriétés, Emplois et plus..."
+                                class="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button class="bg-indigo-600 text-white px-6 py-2 rounded-r-md hover:bg-indigo-700 transition-all">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="search-dropdown bg-white mt-1 rounded-md shadow-lg border border-gray-200">
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-700 mb-2">Recherches Populaires</h3>
+                            <ul>
+                                <li class="py-1 hover:bg-gray-100 px-2 rounded transition-all"><a href="#" class="text-gray-700 flex items-center"><i class="fas fa-search mr-2 text-gray-400"></i> Appartements à louer</a></li>
+                                <li class="py-1 hover:bg-gray-100 px-2 rounded transition-all"><a href="#" class="text-gray-700 flex items-center"><i class="fas fa-search mr-2 text-gray-400"></i> Voitures d'occasion</a></li>
+                                <li class="py-1 hover:bg-gray-100 px-2 rounded transition-all"><a href="#" class="text-gray-700 flex items-center"><i class="fas fa-search mr-2 text-gray-400"></i> Emplois à Abidjan</a></li>
+                                <li class="py-1 hover:bg-gray-100 px-2 rounded transition-all"><a href="#" class="text-gray-700 flex items-center"><i class="fas fa-search mr-2 text-gray-400"></i> iPhone 14</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Selector -->
+                <div class="dropdown relative">
+                    <button class="flex items-center text-gray-700 hover:text-indigo-600 transition-all">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        <span>Toute la Côte d'Ivoire</span>
+                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div class="dropdown-menu absolute hidden right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        <ul class="py-1">
+                            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-city mr-2 text-indigo-500"></i> Abidjan</a></li>
+                            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-building mr-2 text-indigo-500"></i> Yamoussoukro</a></li>
+                            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-umbrella-beach mr-2 text-indigo-500"></i> San-Pédro</a></li>
+                            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-industry mr-2 text-indigo-500"></i> Bouaké</a></li>
+                            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-tree mr-2 text-indigo-500"></i> Daloa</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation -->
+    <nav class="bg-white border-t border-gray-200 sticky top-16 z-40">
+        <div class="container mx-auto px-4">
+            <ul class="flex space-x-6 py-3 overflow-x-auto scrollbar-hide">
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-list mr-1"></i> Toutes Catégories</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-home mr-1"></i> Propriétés</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-car mr-1"></i> Voitures</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-mobile-alt mr-1"></i> Électronique</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-couch mr-1"></i> Meubles</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-briefcase mr-1"></i> Emplois</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-tools mr-1"></i> Services</a></li>
+                <li><a href="#" class="text-gray-700 hover:text-indigo-600 font-medium transition-all flex items-center"><i class="fas fa-users mr-1"></i> Communauté</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <div class="gradient-bg animated-bg text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl">
+                <h1 class="text-4xl font-bold mb-4">Achetez & Vendez en Côte d'Ivoire</h1>
+                <p class="text-xl mb-8">Trouvez des bonnes affaires sur des articles neufs et d'occasion ou publiez vos articles gratuitement.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-md hover:bg-gray-100 transition-all flex items-center">
+                        <i class="fas fa-list mr-2"></i> Parcourir les Catégories
+                    </a>
+                    <a href="#" class="bg-transparent border-2 border-white font-semibold px-6 py-3 rounded-md hover:bg-white hover:text-indigo-600 transition-all flex items-center">
+                        <i class="fas fa-plus-circle mr-2"></i> Publier une Annonce
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8">Catégories Populaires</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <!-- Category 1 -->
+                <a href="#" class="category-card bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition-all group">
+                    <div class="category-icon mx-auto mb-3 group-hover:scale-110 transition-all" style="background-image: url('https://cdn-icons-png.flaticon.com/512/2331/2331890.png')"></div>
+                    <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-all">Voitures</h3>
+                    <p class="text-sm text-gray-500 mt-1">12,345 annonces</p>
+                </a>
+                                
+                <!-- Category 2 -->
+                <a href="#" class="category-card bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition-all group">
+                    <div class="category-icon mx-auto mb-3 group-hover:scale-110 transition-all" style="background-image: url('https://cdn-icons-png.flaticon.com/512/619/619153.png')"></div>
+                    <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-all">Propriétés</h3>
+                    <p class="text-sm text-gray-500 mt-1">8,765 annonces</p>
+                </a>
+                                
+                <!-- Category 3 -->
+                <a href="#" class="category-card bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition-all group">
+                    <div class="category-icon mx-auto mb-3 group-hover:scale-110 transition-all" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3659/3659898.png')"></div>
+                    <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-all">Téléphones</h3>
+                    <p class="text-sm text-gray-500 mt-1">5,432 annonces</p>
+                </a>
+                                
+                <!-- Category 4 -->
+                <a href="#" class="category-card bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition-all group">
+                    <div class="category-icon mx-auto mb-3 group-hover:scale-110 transition-all" style="background-image: url('https://cdn-icons-png.flaticon.com/512/1570/1570887.png')"></div>
+                    <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-all">Emplois</h3>
+                    <p class="text-sm text-gray-500 mt-1">3,210 annonces</p>
+                </a>
+                                
+                <!-- Category 5 -->
+                <a href="#" class="category-card bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition-all group">
+                    <div class="category-icon mx-auto mb-3 group-hover:scale-110 transition-all" style="background-image: url('https://cdn-icons-png.flaticon.com/512/1865/1865269.png')"></div>
+                    <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-all">Meubles</h3>
+                    <p class="text-sm text-gray-500 mt-1">2,987 annonces</p>
+                </a>
+                                
+                <!-- Category 6 -->
+                <a href="#" class="category-card bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition-all group">
+                    <div class="category-icon mx-auto mb-3 group-hover:scale-110 transition-all" style="background-image: url('https://cdn-icons-png.flaticon.com/512/3659/3659899.png')"></div>
+                    <h3 class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-all">Électronique</h3>
+                    <p class="text-sm text-gray-500 mt-1">4,321 annonces</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Properties -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Propriétés en Vedette</h2>
+                <a href="#" class="text-indigo-600 font-semibold hover:underline flex items-center">
+                    Voir Tout <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+                        
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Property 1 -->
+                <div class="property-card bg-white rounded-lg overflow-hidden shadow-md transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                              alt="Property" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2 bg-indigo-600 text-white px-2 py-1 rounded-md text-sm font-semibold">
+                            Vedette
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white text-gray-800 px-2 py-1 rounded-md text-xs font-semibold flex items-center">
+                            <i class="fas fa-camera mr-1 text-indigo-500"></i> 12 Photos
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1 hover:text-indigo-600 transition-all">Appartement Moderne à Abidjan</h3>
+                        <p class="text-gray-600 mb-2 flex items-center"><i class="fas fa-map-marker-alt mr-2 text-indigo-500"></i> Abidjan, Plateau</p>
+                        <div class="flex items-center text-gray-700 mb-3">
+                            <span class="mr-4"><i class="fas fa-bed mr-1 text-indigo-500"></i> 3 Chambres</span>
+                            <span><i class="fas fa-bath mr-1 text-indigo-500"></i> 2 Salles de bain</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-indigo-600">150,000 FCFA / mois</span>
+                            <button class="text-gray-400 hover:text-red-500 transition-all"><i class="fas fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property 2 -->
+                <div class="property-card bg-white rounded-lg overflow-hidden shadow-md transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+                              alt="Property" class="w-full h-48 object-cover">
+                        <div class="absolute bottom-2 left-2 bg-white text-gray-800 px-2 py-1 rounded-md text-xs font-semibold flex items-center">
+                            <i class="fas fa-camera mr-1 text-indigo-500"></i> 8 Photos
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1 hover:text-indigo-600 transition-all">Villa Spacieuse à Yamoussoukro</h3>
+                        <p class="text-gray-600 mb-2 flex items-center"><i class="fas fa-map-marker-alt mr-2 text-indigo-500"></i> Yamoussoukro, Centre</p>
+                        <div class="flex items-center text-gray-700 mb-3">
+                            <span class="mr-4"><i class="fas fa-bed mr-1 text-indigo-500"></i> 5 Chambres</span>
+                            <span><i class="fas fa-bath mr-1 text-indigo-500"></i> 4 Salles de bain</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-indigo-600">45,000,000 FCFA</span>
+                            <button class="text-gray-400 hover:text-red-500 transition-all"><i class="fas fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property 3 -->
+                <div class="property-card bg-white rounded-lg overflow-hidden shadow-md transition-all">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                              alt="Property" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-md text-sm font-semibold">
+                            Nouveau
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-white text-gray-800 px-2 py-1 rounded-md text-xs font-semibold flex items-center">
+                            <i class="fas fa-camera mr-1 text-indigo-500"></i> 15 Photos
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1 hover:text-indigo-600 transition-all">Studio Confortable à San-Pédro</h3>
+                        <p class="text-gray-600 mb-2 flex items-center"><i class="fas fa-map-marker-alt mr-2 text-indigo-500"></i> San-Pédro, Bord de Mer</p>
+                        <div class="flex items-center text-gray-700 mb-3">
+                            <span class="mr-4"><i class="fas fa-bed mr-1 text-indigo-500"></i> 1 Chambre</span>
+                            <span><i class="fas fa-bath mr-1 text-indigo-500"></i> 1 Salle de bain</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-indigo-600">80,000 FCFA / mois</span>
+                            <button class="text-red-500 transition-all"><i class="fas fa-heart"></i></button> <!-- Example: Already favorited -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-16 bg-indigo-50">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Comment ça Marche?</h2>
+            <p class="text-gray-600 mb-12 max-w-2xl mx-auto">Vendre et acheter sur Trouvito est simple, rapide et sécurisé. Suivez ces étapes faciles pour commencer.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="bg-indigo-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-2xl font-bold floating">
+                        1
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Créez un Compte</h3>
+                    <p class="text-gray-600">Inscrivez-vous gratuitement en quelques secondes pour commencer à publier vos annonces.</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="bg-indigo-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-2xl font-bold floating" style="animation-delay: 0.2s;">
+                        2
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Publiez votre Annonce</h3>
+                    <p class="text-gray-600">Ajoutez des détails, des photos et fixez votre prix. Votre annonce sera visible par des milliers d'acheteurs.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="bg-indigo-600 text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-2xl font-bold floating" style="animation-delay: 0.4s;">
+                        3
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Vendez & Achetez</h3>
+                    <p class="text-gray-600">Communiquez avec les acheteurs/vendeurs potentiels et finalisez votre transaction en toute sécurité.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <!-- About -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">À Propos</h4>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Qui sommes-nous?</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Carrières</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Presse</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Blog</a></li>
+                    </ul>
+                </div>
+                <!-- Support -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Support</h4>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Centre d'aide</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Contactez-nous</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Règles de sécurité</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Conditions d'utilisation</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                <!-- Explore -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Explorer</h4>
+                    <ul>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Plan du site</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Régions Populaires</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Recherches Populaires</a></li>
+                        <li class="mb-2"><a href="#" class="hover:text-indigo-400 transition-all">Publicité</a></li>
+                    </ul>
+                </div>
+                <!-- Follow Us -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Suivez-nous</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-all"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-all"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-all"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-all"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <h4 class="text-white font-semibold mt-6 mb-4">Télécharger l'App</h4>
+                    <div class="flex space-x-2">
+                        <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Download_on_the_App_Store_Badge.svg/1280px-Download_on_the_App_Store_Badge.svg.png" alt="App Store" class="h-10"></a>
+                        <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/1280px-Google_Play_Store_badge_EN.svg.png" alt="Google Play" class="h-10"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 text-center text-sm">
+                &copy; 2024 Trouvito Côte d'Ivoire. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script for dropdowns if needed, Tailwind handles hover states
+        // You might add more JS for search suggestions, form validation, etc.
+    </script>
+</body>
+</html>
+

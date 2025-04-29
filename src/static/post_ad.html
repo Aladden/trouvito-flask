@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post New Ad - Trouvito Ivory Coast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        .image-preview {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        .remove-image {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header (Assuming user is logged in to post) -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto py-4 px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="/" class="text-3xl font-bold logo-text">trouvito</a>
+                <span class="ml-2 text-gray-500">Côte d'Ivoire</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                 <!-- User Dropdown (Visible when logged in) -->
+                <div class="dropdown relative hidden" id="user-dropdown">
+                    <button class="flex items-center text-gray-700 hover:text-indigo-600 transition-all">
+                        <i class="fas fa-user-circle text-xl mr-1"></i>
+                        <span id="profile-username-header">My Account</span>
+                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div class="dropdown-menu absolute hidden right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        <ul class="py-1">
+                            <li><a href="/profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-user mr-2 text-indigo-500"></i> My Profile</a></li>
+                            <li><a href="/messages.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-envelope mr-2 text-indigo-500"></i> Messages</a></li>
+                            <li><a href="#" id="logout-button" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-sign-out-alt mr-2 text-indigo-500"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+                 <!-- Login/Register Buttons (Should not be visible here) -->
+                 <div id="auth-buttons" class="flex space-x-2 hidden">
+                    <a href="/login.html" class="text-gray-700 hover:text-indigo-600">Log In</a>
+                    <a href="/register.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm">Register</a>
+                 </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ad Posting Form -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Post Your Advertisement</h2>
+            <div id="post-ad-message" class="mb-4 hidden p-3 rounded-md"></div>
+            <form id="ad-form" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Ad Title</label>
+                    <input type="text" id="title" name="title" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                    <textarea id="description" name="description" rows="4" required
+                              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category</label>
+                        <select id="category" name="category_id" required
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500">
+                            <option value="" disabled selected>Loading categories...</option>
+                            <!-- Categories will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price (FCFA, optional)</label>
+                        <input type="number" id="price" name="price" step="any"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="location" class="block text-gray-700 text-sm font-bold mb-2">Location</label>
+                    <select id="location" name="location_id" required
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500">
+                        <option value="" disabled selected>Loading locations...</option>
+                        <!-- Locations will be populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label for="images" class="block text-gray-700 text-sm font-bold mb-2">Upload Images (Max 5)</label>
+                    <input type="file" id="images" name="images" multiple accept="image/*"
+                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
+                    <div id="image-preview-container" class="image-preview-container"></div>
+                    <p class="text-xs text-gray-500 mt-1">You can upload multiple images. First image will be the main image.</p>
+                </div>
+
+                <div class="flex items-center justify-center">
+                    <button type="submit"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition-all">
+                        Post Ad
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="bg-gray-200 text-gray-600 py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            &copy; 2024 Trouvito Côte d'Ivoire. Tous droits réservés.
+        </div>
+    </footer>
+
+    <script>
+        const adForm = document.getElementById('ad-form');
+        const postAdMessage = document.getElementById('post-ad-message');
+        const categorySelect = document.getElementById('category');
+        const locationSelect = document.getElementById('location');
+        const imageInput = document.getElementById('images');
+        const previewContainer = document.getElementById('image-preview-container');
+        const maxImages = 5;
+        let currentFiles = []; // To manage files for preview and submission
+
+        const profileUsernameHeader = document.getElementById('profile-username-header');
+        const logoutButton = document.getElementById('logout-button');
+        const userDropdown = document.getElementById('user-dropdown');
+        const authButtons = document.getElementById('auth-buttons');
+
+        // --- Authentication Check and Header Update ---
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                if (data.logged_in) {
+                    profileUsernameHeader.textContent = data.user.username;
+                    userDropdown.classList.remove('hidden');
+                    authButtons.classList.add('hidden');
+                    return true; // User is logged in
+                } else {
+                    userDropdown.classList.add('hidden');
+                    authButtons.classList.remove('hidden');
+                    // Redirect to login page if trying to post ad while logged out
+                    window.location.href = '/login.html?redirect=/post_ad.html';
+                    return false; // User is not logged in
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                userDropdown.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+                 // Redirect to login page on error
+                window.location.href = '/login.html?redirect=/post_ad.html';
+                return false;
+            }
+        }
+
+        // --- Fetch Categories and Locations ---
+        async function loadDropdownData() {
+            try {
+                // Fetch Categories
+                const catResponse = await fetch('/api/ads/categories');
+                const categories = await catResponse.json();
+                categorySelect.innerHTML = '<option value="" disabled selected>Select a category</option>'; // Reset
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    categorySelect.appendChild(option);
+                });
+
+                // Fetch Locations
+                const locResponse = await fetch('/api/ads/locations');
+                const locations = await locResponse.json();
+                locationSelect.innerHTML = '<option value="" disabled selected>Select a location</option>'; // Reset
+                locations.forEach(loc => {
+                    const option = document.createElement('option');
+                    option.value = loc.id;
+                    option.textContent = `${loc.city}, ${loc.region}`;
+                    locationSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error loading categories/locations:', error);
+                categorySelect.innerHTML = '<option value="" disabled selected>Error loading categories</option>';
+                locationSelect.innerHTML = '<option value="" disabled selected>Error loading locations</option>';
+            }
+        }
+
+        // --- Image Preview Logic ---
+        imageInput.addEventListener('change', (event) => {
+            const files = Array.from(event.target.files);
+            const filesToAdd = [];
+
+            // Filter out non-images and respect max limit
+            files.forEach(file => {
+                if (file.type.startsWith('image/') && currentFiles.length < maxImages) {
+                    filesToAdd.push(file);
+                    currentFiles.push(file);
+                }
+            });
+
+            if (currentFiles.length >= maxImages && files.length > filesToAdd.length) {
+                 alert(`You can only upload a maximum of ${maxImages} images.`);
+            }
+
+            filesToAdd.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.classList.add('image-preview');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = file.name;
+                    previewWrapper.appendChild(img);
+
+                    const removeBtn = document.createElement('span');
+                    removeBtn.classList.add('remove-image');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.dataset.fileName = file.name; // Store filename to identify for removal
+                    removeBtn.dataset.fileLastModified = file.lastModified;
+
+                    removeBtn.addEventListener('click', () => {
+                        const nameToRemove = removeBtn.dataset.fileName;
+                        const lastModifiedToRemove = parseInt(removeBtn.dataset.fileLastModified);
+
+                        // Find the index of the file associated with this preview
+                        const indexToRemove = currentFiles.findIndex(f => f.name === nameToRemove && f.lastModified === lastModifiedToRemove);
+
+                        if (indexToRemove > -1) {
+                            currentFiles.splice(indexToRemove, 1); // Remove from tracked list
+                            previewWrapper.remove(); // Remove preview element
+                            updateFileInput(); // Update the actual file input
+                        }
+                    });
+                    previewWrapper.appendChild(removeBtn);
+                    previewContainer.appendChild(previewWrapper);
+                }
+                reader.readAsDataURL(file);
+            });
+            updateFileInput(); // Update the actual file input after processing new files
+        });
+
+        function updateFileInput() {
+            const dataTransfer = new DataTransfer();
+            currentFiles.forEach(file => dataTransfer.items.add(file));
+            imageInput.files = dataTransfer.files;
+        }
+
+        // --- Handle Form Submission ---
+        adForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            postAdMessage.classList.add('hidden');
+
+            const formData = new FormData(adForm);
+            // FormData automatically includes files from the input#images
+
+            // Basic client-side validation (optional, as backend validates too)
+            if (!formData.get('title') || !formData.get('description') || !formData.get('category_id') || !formData.get('location_id')) {
+                postAdMessage.textContent = 'Please fill in all required fields.';
+                postAdMessage.className = 'mb-4 p-3 rounded-md bg-red-100 text-red-700';
+                postAdMessage.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/ads', {
+                    method: 'POST',
+                    // No 'Content-Type' header needed for FormData, browser sets it with boundary
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    postAdMessage.textContent = result.message || 'Ad posted successfully! Redirecting...';
+                    postAdMessage.className = 'mb-4 p-3 rounded-md bg-green-100 text-green-700';
+                    postAdMessage.classList.remove('hidden');
+                    adForm.reset(); // Clear the form
+                    previewContainer.innerHTML = ''; // Clear previews
+                    currentFiles = []; // Clear tracked files
+                    updateFileInput();
+                    // Redirect to the new ad's detail page or profile after delay
+                    setTimeout(() => {
+                        window.location.href = `/ad_details.html?id=${result.ad.id}`; // Redirect to the new ad
+                    }, 2000);
+                } else {
+                    postAdMessage.textContent = result.error || 'Failed to post ad. Please try again.';
+                    postAdMessage.className = 'mb-4 p-3 rounded-md bg-red-100 text-red-700';
+                    postAdMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error posting ad:', error);
+                postAdMessage.textContent = 'An error occurred. Please try again later.';
+                postAdMessage.className = 'mb-4 p-3 rounded-md bg-red-100 text-red-700';
+                postAdMessage.classList.remove('hidden');
+            }
+        });
+
+         // --- Handle Logout ---
+        logoutButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/auth/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/'; // Redirect to homepage after logout
+                } else {
+                    alert('Logout failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('An error occurred during logout.');
+            }
+        });
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isLoggedIn = await checkLoginStatus();
+            if (isLoggedIn) {
+                loadDropdownData();
+            }
+        });
+
+    </script>
+</body>
+</html>
+

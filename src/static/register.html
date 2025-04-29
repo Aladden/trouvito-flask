@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Trouvito Ivory Coast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Simple Header -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 flex justify-center">
+            <a href="/" class="text-3xl font-bold logo-text">trouvito</a>
+        </div>
+    </header>
+
+    <!-- Registration Form -->
+    <div class="container mx-auto px-4 py-16 flex justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Create Your Account</h2>
+            <div id="register-message" class="mb-4 hidden p-3 rounded-md"></div>
+            <form id="register-form"> <!-- Removed action and method -->
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                    <input type="text" id="username" name="username" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="password" name="password" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-indigo-500">
+                    <!-- Add password confirmation field if needed -->
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <button type="submit"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition-all">
+                        Register
+                    </button>
+                </div>
+                <p class="text-center text-gray-600 text-sm">
+                    Already have an account? <a href="/login.html" class="text-indigo-600 hover:text-indigo-800 font-bold">Log in here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="bg-gray-200 text-gray-600 py-4 mt-16">
+        <div class="container mx-auto px-4 text-center text-sm">
+            &copy; 2024 Trouvito Côte d'Ivoire. Tous droits réservés.
+        </div>
+    </footer>
+
+    <script>
+        const registerForm = document.getElementById('register-form');
+        const registerMessage = document.getElementById('register-message');
+
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            registerMessage.classList.add('hidden');
+
+            const formData = new FormData(registerForm);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    registerMessage.textContent = result.message || 'Registration successful! Redirecting...';
+                    registerMessage.className = 'mb-4 p-3 rounded-md bg-green-100 text-green-700';
+                    registerMessage.classList.remove('hidden');
+                    // Redirect to profile or home page after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/profile.html'; // Or '/' for homepage
+                    }, 1500);
+                } else {
+                    registerMessage.textContent = result.error || 'Registration failed. Please try again.';
+                    registerMessage.className = 'mb-4 p-3 rounded-md bg-red-100 text-red-700';
+                    registerMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error during registration:', error);
+                registerMessage.textContent = 'An error occurred. Please try again later.';
+                registerMessage.className = 'mb-4 p-3 rounded-md bg-red-100 text-red-700';
+                registerMessage.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
+

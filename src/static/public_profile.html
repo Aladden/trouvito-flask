@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Trouvito Ivory Coast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .logo-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4f46e5;
+            animation: spin 1s ease infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto py-4 px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="/" class="text-3xl font-bold logo-text">trouvito</a>
+                <span class="ml-2 text-gray-500">Côte d'Ivoire</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/post_ad.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-all text-sm hidden" id="post-ad-button">Post New Ad</a>
+                <!-- User Dropdown (Visible when logged in) -->
+                <div class="dropdown relative hidden" id="user-dropdown">
+                    <button class="flex items-center text-gray-700 hover:text-indigo-600 transition-all">
+                        <i class="fas fa-user-circle text-xl mr-1"></i>
+                        <span id="profile-username-header">My Account</span>
+                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div class="dropdown-menu absolute hidden right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        <ul class="py-1">
+                            <li><a href="/profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-user mr-2 text-indigo-500"></i> My Profile</a></li>
+                            <li><a href="/messages.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-envelope mr-2 text-indigo-500"></i> Messages</a></li>
+                            <li><a href="#" id="logout-button" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-all"><i class="fas fa-sign-out-alt mr-2 text-indigo-500"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+                 <!-- Login/Register Buttons (Visible when logged out) -->
+                 <div id="auth-buttons" class="flex space-x-2">
+                    <a href="/login.html" class="text-gray-700 hover:text-indigo-600">Log In</a>
+                    <a href="/register.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm">Register</a>
+                 </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Public Profile Section -->
+    <div class="container mx-auto px-4 py-12">
+        <div id="public-profile-loading" class="text-center"><div class="spinner"></div><p>Loading profile...</p></div>
+        <div id="public-profile-error" class="text-center text-red-500 hidden"></div>
+        <div id="public-profile-content" class="hidden">
+            <!-- User Info Card -->
+            <div class="bg-white p-6 rounded-lg shadow-md mb-8 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <i class="fas fa-user-circle text-6xl text-gray-400"></i>
+                <div class="flex-grow text-center sm:text-left">
+                    <h2 id="public-username" class="text-2xl font-bold text-gray-800"></h2>
+                    <p class="text-sm text-gray-500">Member since <span id="public-member-since"></span></p>
+                    <div id="public-user-rating" class="mt-1 text-sm text-gray-600">
+                        <!-- Rating loaded here -->
+                    </div>
+                    <p id="public-profile-info" class="mt-2 text-gray-700"></p>
+                </div>
+                <button id="public-contact-seller-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-all hidden"><i class="fas fa-envelope mr-2"></i>Contact User</button>
+            </div>
+
+            <!-- Tabs for Ads and Reviews -->
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                        <button class="public-tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 active" data-tab="user-ads">
+                            Active Ads
+                        </button>
+                        <button class="public-tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="user-reviews">
+                            Reviews Received (<span id="public-review-count">0</span>)
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content: User Ads -->
+                <div id="tab-user-ads" class="public-tab-content active p-6">
+                    <div id="public-ads-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Ads will be loaded dynamically here -->
+                    </div>
+                    <p id="public-no-ads-message" class="text-gray-500 mt-4 hidden">This user has no active ads.</p>
+                </div>
+
+                <!-- Tab Content: User Reviews -->
+                <div id="tab-user-reviews" class="public-tab-content p-6 hidden">
+                    <div id="public-reviews-list" class="space-y-4">
+                        <!-- Reviews will be loaded dynamically here -->
+                    </div>
+                    <p id="public-no-reviews-message" class="text-gray-500 mt-4 hidden">This user hasn't received any reviews yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="bg-gray-200 text-gray-600 py-4 mt-12">
+        <div class="container mx-auto px-4 text-center text-sm">
+            &copy; 2024 Trouvito Côte d'Ivoire. Tous droits réservés.
+        </div>
+    </footer>
+
+    <script>
+        const profileLoading = document.getElementById('public-profile-loading');
+        const profileContent = document.getElementById('public-profile-content');
+        const profileError = document.getElementById('public-profile-error');
+        const publicUsername = document.getElementById('public-username');
+        const publicMemberSince = document.getElementById('public-member-since');
+        const publicUserRating = document.getElementById('public-user-rating');
+        const publicProfileInfo = document.getElementById('public-profile-info');
+        const publicContactBtn = document.getElementById('public-contact-seller-btn');
+        const publicAdsList = document.getElementById('public-ads-list');
+        const publicNoAdsMsg = document.getElementById('public-no-ads-message');
+        const publicReviewsList = document.getElementById('public-reviews-list');
+        const publicNoReviewsMsg = document.getElementById('public-no-reviews-message');
+        const publicReviewCount = document.getElementById('public-review-count');
+
+        const profileUsernameHeader = document.getElementById('profile-username-header');
+        const logoutButton = document.getElementById('logout-button');
+        const userDropdown = document.getElementById('user-dropdown');
+        const authButtons = document.getElementById('auth-buttons');
+        const postAdButton = document.getElementById('post-ad-button');
+
+        let currentUserId = null; // ID of the logged-in user
+        let profileUserId = null; // ID of the profile being viewed
+
+        // --- Authentication Check and Header Update ---
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                if (data.logged_in) {
+                    currentUserId = data.user.id;
+                    profileUsernameHeader.textContent = data.user.username;
+                    userDropdown.classList.remove('hidden');
+                    authButtons.classList.add('hidden');
+                    postAdButton.classList.remove('hidden');
+                } else {
+                    currentUserId = null;
+                    userDropdown.classList.add('hidden');
+                    authButtons.classList.remove('hidden');
+                    postAdButton.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                currentUserId = null;
+                userDropdown.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+                postAdButton.classList.add('hidden');
+            }
+        }
+
+        // --- Load Public Profile Details ---
+        async function loadPublicProfile() {
+            await checkLoginStatus();
+            const urlParams = new URLSearchParams(window.location.search);
+            profileUserId = urlParams.get('id');
+
+            if (!profileUserId) {
+                showError('No user ID specified.');
+                return;
+            }
+
+            // Redirect to own profile page if viewing self
+            if (currentUserId && currentUserId == profileUserId) {
+                window.location.href = '/profile.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/users/${profileUserId}/profile`);
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'User not found or error loading profile.' }));
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                // Populate User Info
+                publicUsername.textContent = data.username;
+                publicMemberSince.textContent = new Date(data.created_at).toLocaleDateString();
+                publicProfileInfo.textContent = data.profile_info || '';
+
+                // User Rating
+                if (data.average_rating !== null) {
+                    let starsHtml = '';
+                    const roundedRating = Math.round(data.average_rating * 2) / 2;
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= roundedRating) starsHtml += '<i class="fas fa-star text-yellow-400"></i>';
+                        else if (i - 0.5 === roundedRating) starsHtml += '<i class="fas fa-star-half-alt text-yellow-400"></i>';
+                        else starsHtml += '<i class="far fa-star text-gray-300"></i>';
+                    }
+                    publicUserRating.innerHTML = `${starsHtml} ${data.average_rating.toFixed(1)}/5 (${data.review_count} reviews)`;
+                } else {
+                    publicUserRating.textContent = 'No ratings yet.';
+                }
+
+                // Contact Button
+                if (currentUserId && currentUserId != profileUserId) {
+                    publicContactBtn.classList.remove('hidden');
+                    publicContactBtn.onclick = () => {
+                        window.location.href = `/messages.html?recipient_id=${profileUserId}&recipient_username=${data.username}`;
+                    };
+                }
+
+                // Populate Ads
+                publicAdsList.innerHTML = '';
+                if (data.ads && data.ads.length > 0) {
+                    publicNoAdsMsg.classList.add('hidden');
+                    data.ads.forEach(ad => {
+                        const adElement = createPublicAdElement(ad);
+                        publicAdsList.appendChild(adElement);
+                    });
+                } else {
+                    publicNoAdsMsg.classList.remove('hidden');
+                }
+
+                // Populate Reviews
+                publicReviewsList.innerHTML = '';
+                publicReviewCount.textContent = data.reviews.length;
+                if (data.reviews && data.reviews.length > 0) {
+                    publicNoReviewsMsg.classList.add('hidden');
+                    data.reviews.forEach(review => {
+                        const reviewElement = createPublicReviewElement(review);
+                        publicReviewsList.appendChild(reviewElement);
+                    });
+                } else {
+                    publicNoReviewsMsg.classList.remove('hidden');
+                }
+
+                profileLoading.classList.add('hidden');
+                profileContent.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error loading public profile:', error);
+                showError(error.message || 'Failed to load profile. Please try again.');
+            }
+        }
+
+        function createPublicAdElement(ad) {
+            const div = document.createElement('div');
+            div.className = 'bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden';
+            const imageUrl = ad.image ? escapeHtml(ad.image) : '/static/placeholder.png'; // Add a placeholder image path
+
+            div.innerHTML = `
+                <a href="/ad_details.html?id=${ad.id}" class="block">
+                    <img src="${imageUrl}" alt="${escapeHtml(ad.title)}" class="h-48 w-full object-cover">
+                    <div class="p-4">
+                        <h4 class="font-semibold text-md text-gray-800 truncate">${escapeHtml(ad.title)}</h4>
+                        <p class="text-indigo-600 font-bold text-lg mt-1">${ad.price ? `${ad.price.toLocaleString('fr-CI')} FCFA` : ''}</p>
+                        <p class="text-sm text-gray-500 truncate mt-1">${escapeHtml(ad.location || 'N/A')}</p>
+                        <p class="text-xs text-gray-400 mt-2">Posted: ${new Date(ad.created_at).toLocaleDateString()}</p>
+                    </div>
+                </a>
+            `;
+            return div;
+        }
+
+        function createPublicReviewElement(review) {
+            const div = document.createElement('div');
+            div.className = 'border-b py-4';
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<i class="${i <= review.rating ? 'fas' : 'far'} fa-star text-yellow-400"></i>`;
+            }
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-1">
+                    <div>
+                        <span class="font-semibold">${escapeHtml(review.reviewer.username)}</span>
+                        <span class="text-sm text-gray-500 ml-2">- ${new Date(review.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <div class="flex text-yellow-400">
+                        ${starsHtml}
+                    </div>
+                </div>
+                <p class="text-gray-700">${escapeHtml(review.review_text || '')}</p>
+            `;
+            return div;
+        }
+
+        function showError(message) {
+            profileLoading.classList.add('hidden');
+            profileContent.classList.add('hidden');
+            profileError.textContent = message;
+            profileError.classList.remove('hidden');
+        }
+
+        // --- Handle Logout ---
+        logoutButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/auth/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('Logout failed.');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('An error occurred during logout.');
+            }
+        });
+
+        // --- Tab Switching Logic ---
+        const tabButtons = document.querySelectorAll('.public-tab-button');
+        const tabContents = document.querySelectorAll('.public-tab-content');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                tabButtons.forEach(btn => btn.classList.remove('active', 'text-indigo-600', 'border-indigo-600'));
+                button.classList.add('active', 'text-indigo-600', 'border-indigo-600');
+                tabContents.forEach(content => {
+                    content.classList.toggle('hidden', content.id !== `tab-${tabId}`);
+                    content.classList.toggle('active', content.id === `tab-${tabId}`); // Keep active class for potential styling
+                });
+            });
+        });
+
+        // --- Utility function ---
+        function escapeHtml(unsafe) {
+            if (unsafe === null || typeof unsafe === 'undefined') return '';
+            return unsafe.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', loadPublicProfile);
+
+    </script>
+</body>
+</html>
+
